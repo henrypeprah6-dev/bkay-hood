@@ -11,6 +11,6 @@ def create_or_save_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.get_or_create(user=instance)
     else:
-        # Ensures that if an existing user somehow lacks a profile, it gets created safely
-        Profile.objects.get_or_create(user=instance)
-        instance.profile.save()
+        # For updates, just save the existing profile if it exists
+        if hasattr(instance, 'profile'):
+            instance.profile.save()
