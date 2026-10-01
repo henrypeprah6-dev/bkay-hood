@@ -55,7 +55,11 @@ def signup_view(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Profile creation is handled automatically via signals.py
+            # Safely ensure or update profile data with the selected community without unique constraint crashes
+            Profile.objects.update_or_create(
+                user=user,
+                defaults={'community': form.cleaned_data.get('community')}
+            )
             login(request, user)  # Auto-login after registration (Facebook style)
             return redirect('home')
     else:
