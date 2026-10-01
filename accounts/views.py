@@ -55,6 +55,7 @@ def signup_view(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Profile creation is handled automatically via signals.py
             login(request, user)  # Auto-login after registration (Facebook style)
             return redirect('home')
     else:
