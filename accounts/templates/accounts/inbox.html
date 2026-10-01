@@ -1,0 +1,35 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow border max-w-lg mx-auto">
+  <h2 class="text-2xl font-bold text-gray-800 mb-4">Messages</h2>
+  <div class="space-y-3">
+    {% for chat in chat_list %}
+      <a href="{% url 'chat' chat.partner.username %}" class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition border">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-brandPink text-white font-bold flex items-center justify-center overflow-hidden">
+            {% if chat.partner.profile.avatar and chat.partner.profile.avatar.name != 'avatars/default.png' %}
+              <img src="{{ chat.partner.profile.avatar.url }}" class="w-full h-full object-cover">
+            {% else %}
+              {{ chat.partner.username|slice:":1"|upper }}
+            {% endif %}
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-900 text-sm">@{{ chat.partner.username }}</h4>
+            <p class="text-xs text-gray-400">Click to open chat</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          {% if chat.unread_count > 0 %}
+            <span class="bg-brandPink text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+              {{ chat.unread_count }} new
+            </span>
+          {% endif %}
+          <span class="text-xs text-brandPink font-bold">Chat &rarr;</span>
+        </div>
+      </a>
+    {% empty %}
+      <p class="text-gray-500 text-center py-4">No other users found.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

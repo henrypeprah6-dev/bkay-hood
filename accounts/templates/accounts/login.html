@@ -1,0 +1,73 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 max-w-md mx-auto mt-8">
+  <div class="text-center mb-6">
+    <h2 class="text-3xl font-extrabold text-fbBlue">Log In</h2>
+    <p class="text-gray-500 text-sm mt-1">Connect with friends on Bkay Hood</p>
+  </div>
+
+  <form method="POST" class="space-y-4">
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div>
+      <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Username</label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.username.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Password</label>
+      {{ form.password }}
+      {% if form.password.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.password.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="w-full bg-brandPink hover:bg-brandPinkHover text-white py-2.5 rounded-lg font-bold shadow transition">
+      Log In
+    </button>
+  </form>
+
+  <div class="mt-4 text-center text-xs text-gray-500">
+    By logging in, you agree to our 
+    <a href="#" class="text-brandPink hover:underline font-semibold">Terms and Conditions</a>.
+  </div>
+
+  <div class="mt-6 text-center border-t border-gray-200 pt-4">
+    <p class="text-sm text-gray-600 mb-2">Need an account?</p>
+    <a href="{% url 'signup' %}" class="inline-block bg-fbBlue hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
+      Create New Account
+    </a>
+  </div>
+</div>
+
+<style>
+  form input[type="text"],
+  form input[type="password"],
+  form input[type="email"] {
+    width: 100% !important;
+    padding: 10px 14px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    outline: none !important;
+    background-color: #f9fafb !important;
+    font-size: 14px !important;
+  }
+  form input[type="text"]:focus,
+  form input[type="password"]:focus,
+  form input[type="email"]:focus {
+    border-color: #ec4899 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.2) !important;
+  }
+</style>
+{% endblock %}

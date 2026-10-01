@@ -1,0 +1,43 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 max-w-md mx-auto mt-6 mb-16">
+  <div class="text-center mb-6">
+    <h2 class="text-3xl font-extrabold text-brandPink">Sign Up</h2>
+    <p class="text-gray-500 text-sm mt-1">It's quick and easy.</p>
+  </div>
+
+  <form method="POST" class="space-y-4">
+    {% csrf_token %}
+    {% for field in form %}
+      <div>
+        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="w-full bg-brandPink hover:bg-opacity-90 text-white py-2.5 rounded-lg font-bold shadow transition">
+      Sign Up
+    </button>
+  </form>
+
+  <div class="mt-4 text-center text-xs text-gray-500">
+    By signing up, you agree to our 
+    <a href="{% url 'terms' %}" class="text-brandPink hover:underline font-semibold">Terms and Conditions</a>.
+  </div>
+
+  <div class="mt-6 text-center border-t border-gray-200 pt-4">
+    <a href="{% url 'login' %}" class="text-sm text-brandPink font-semibold hover:underline">
+      Already have an account? Log in
+    </a>
+  </div>
+</div>
+
+<style>
+  input, select, textarea { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; background-color: #fff; }
+  input:focus, select:focus, textarea:focus { border-color: #ff2b85; box-shadow: 0 0 0 2px rgba(255, 43, 133, 0.2); }
+</style>
+{% endblock %}

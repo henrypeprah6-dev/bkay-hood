@@ -1,0 +1,293 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Bkay Hood</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Updated gradient background with refined pink tone */
+        body {
+            background: linear-gradient(135deg, #ffd1dc 0%, #b5fffc 50%, #ffffff 100%) !important;
+            background-color: #ffd1dc !important;
+            color: #1c1e21 !important;
+            min-height: 100vh;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        /* Brand & Logo styling */
+        .brand-section {
+            text-align: left;
+        }
+
+        .site-logo {
+            width: 220px;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        /* Adjusted title color to brand pink (#ff2b85) */
+        .logo {
+            color: #ff2b85 !important;
+            font-size: 52px;
+            font-weight: bold;
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            font-size: 27px;
+            margin-top: 10px;
+            line-height: 1.3;
+            color: #1c1e21 !important;
+        }
+
+        .description {
+            color: #4b4f56 !important;
+            font-size: 17px;
+            line-height: 1.5;
+            max-width: 500px;
+            margin-top: 18px;
+        }
+
+        /* Card container */
+        .card {
+            background: #ffffff !important;
+            padding: 26px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            text-align: center;
+        }
+
+        .card h2 {
+            font-size: 22px;
+            margin-bottom: 18px;
+            color: #1c1e21 !important;
+        }
+
+        .input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+            background: #ffffff !important;
+            color: #1c1e21 !important;
+        }
+
+        /* Focus border adjusted to brand pink */
+        .input:focus {
+            border-color: #ff2b85;
+        }
+
+        /* Login button adjusted to brand pink with darker hover */
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 6px;
+            background: #ff2b85 !important;
+            color: white !important;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #e01f70 !important;
+        }
+
+        /* Forgot password link adjusted to brand pink */
+        .forgot {
+            display: block;
+            color: #ff2b85 !important;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 17px 0;
+        }
+
+        .divider {
+            border-top: 1px solid #dadde1;
+            margin: 20px 0;
+        }
+
+        .signup-btn {
+            display: inline-block;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            background: #42b72a !important;
+            color: white !important;
+            padding: 13px 20px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .signup-btn:hover {
+            background: #36a420 !important;
+        }
+
+        .bottom-text {
+            text-align: center;
+            margin-top: 25px;
+            color: #505256 !important;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9) !important;
+            border-top: 1px solid #dddfe2;
+            text-align: center;
+            padding: 13px;
+            color: #65676b !important;
+            font-size: 13px;
+        }
+
+        /* Mobile View */
+        @media (max-width: 750px) {
+            .page {
+                align-items: flex-start;
+                padding-top: 40px;
+                padding-bottom: 80px;
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+                gap: 35px;
+                max-width: 450px;
+            }
+
+            .brand-section {
+                text-align: center;
+            }
+
+            .site-logo {
+                width: 170px;
+            }
+
+            .logo {
+                font-size: 44px;
+            }
+
+            .tagline {
+                font-size: 23px;
+            }
+
+            .description {
+                margin: 15px auto 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="page">
+        <div class="container">
+
+            <!-- Left side (Logo, Title & Text) -->
+            <section class="brand-section">
+                <img src="{% static 'images/logo.png' %}" alt="Bkay Hood Logo" class="site-logo" onerror="this.onerror=null; this.src='{% static 'images/logo.jpg' %}';">
+                
+                <h1 class="logo">Bkay Hood</h1>
+
+                <p class="tagline">
+                    Connect with people in Berekum.
+                </p>
+
+                <p class="description">
+                    Bkay Hood is a social media platform for the people
+                    of Berekum to connect, make new friends, share moments,
+                    chat, and find love.
+                </p>
+            </section>
+
+            <!-- Right side (Form Card) -->
+            <section>
+                <div class="card">
+                    <h2>Welcome to Bkay Hood</h2>
+
+                    <!-- Updated action URL to use the landing_page view name matching your views.py structure -->
+                    <form method="POST" action="{% url 'landing_page' %}">
+                        {% csrf_token %}
+                        <input
+                            class="input"
+                            type="text"
+                            name="username"
+                            placeholder="Username or Email"
+                            required
+                        >
+
+                        <input
+                            class="input"
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            required
+                        >
+
+                        <button
+                            class="login-btn"
+                            type="submit">
+                            Log In
+                        </button>
+                    </form>
+
+                    <a href="#" onclick="alert('Password reset is currently unavailable. Please contact the administrator.'); return false;" class="forgot">
+                        Forgot password?
+                    </a>
+
+                    <div class="divider"></div>
+
+                    <a href="{% url 'signup' %}" class="signup-btn">
+                        Create New Account
+                    </a>
+                </div>
+
+                <p class="bottom-text">
+                    Connect. Chat. Share. Find Love. ❤️
+                </p>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        ©️ 2026 Bkay Hood · Berekum's home for social connections.
+    </footer>
+
+</body>
+</html>

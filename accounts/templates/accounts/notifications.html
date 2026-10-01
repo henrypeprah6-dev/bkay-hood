@@ -1,0 +1,38 @@
+<!-- accounts/notifications.html -->
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow border max-w-lg mx-auto">
+  <h2 class="text-2xl font-bold text-gray-800 mb-4">Notifications</h2>
+  <div class="space-y-3">
+    {% for n in notifications %}
+      <div class="p-3 rounded-lg text-sm flex justify-between items-center {% if not n.is_read %}bg-pink-50 border-l-4 border-brandPink{% else %}bg-gray-50{% endif %}">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-full bg-brandPink text-white font-bold flex items-center justify-center text-xs shrink-0 shadow">
+            {{ n.sender.username.0|upper }}
+          </div>
+          <div>
+            <p class="text-gray-800">{{ n.text }}</p>
+            <span class="text-[10px] text-gray-400">{{ n.created_at|timesince }} ago</span>
+          </div>
+        </div>
+
+        <div class="shrink-0 ml-2">
+          {% if n.notification_type == 'friend_request' %}
+            <a href="{% url 'profile' n.sender.username %}" class="bg-brandPink hover:bg-brandPinkHover text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm">
+              View Profile
+            </a>
+          {% elif n.notification_type == 'message' %}
+            <a href="{% url 'chat' n.sender.username %}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center space-x-1">
+              <i class="fa-solid fa-message"></i>
+              <span>Reply</span>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-gray-400 text-center py-4">No notifications yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

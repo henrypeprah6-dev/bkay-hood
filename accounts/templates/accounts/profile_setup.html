@@ -1,0 +1,27 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 max-w-md mx-auto mt-8">
+  <div class="text-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Set Up Your Profile</h2>
+    <p class="text-gray-500 text-sm mt-1">Tell us a bit about yourself</p>
+  </div>
+
+  <form method="POST" class="space-y-4">
+    {% csrf_token %}
+    <div>
+      <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Age</label>
+      <input type="number" name="age" required min="18" placeholder="Must be 18 or older" class="w-full p-2.5 border rounded-lg focus:outline-none focus:border-brandPink">
+    </div>
+
+    <div>
+      <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Bio</label>
+      <textarea name="bio" rows="3" placeholder="What are your interests?" class="w-full p-2.5 border rounded-lg focus:outline-none focus:border-brandPink resize-none"></textarea>
+    </div>
+
+    <button type="submit" class="w-full bg-brandPink hover:bg-brandPinkHover text-white py-2.5 rounded-lg font-bold transition">
+      Save & Continue
+    </button>
+  </form>
+</div>
+{% endblock %}

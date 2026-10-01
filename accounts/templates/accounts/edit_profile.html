@@ -1,0 +1,16 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow border max-w-md mx-auto">
+  <h2 class="text-2xl font-bold text-brandPink mb-4">Edit Profile</h2>
+  <form method="POST" enctype="multipart/form-data" class="space-y-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="w-full bg-brandPink text-white font-bold py-2 rounded-lg hover:bg-opacity-90 transition">Save Changes</button>
+  </form>
+</div>
+<style>
+  form p { margin-bottom: 12px; font-size: 14px; color: #4b5563; }
+  form input, form textarea, form select { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; margin-top: 4px; outline: none; }
+  form input:focus { border-color: #ff2b85; }
+</style>
+{% endblock %}

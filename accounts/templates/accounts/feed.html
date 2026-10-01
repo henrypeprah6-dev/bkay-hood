@@ -1,0 +1,117 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<!-- Create Post Box -->
+<div class="bg-white p-4 rounded-xl shadow border border-gray-200 mb-6">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="flex space-x-3 items-center mb-3">
+      <div class="w-10 h-10 rounded-full bg-brandPink text-white font-bold flex items-center justify-center shrink-0">
+        {{ user.username|slice:":1"|upper }}
+      </div>
+      <textarea name="content" rows="2" placeholder="What's on your mind, {{ user.username }}?" class="w-full bg-gray-100 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brandPink resize-none" required></textarea>
+    </div>
+    <div class="flex justify-between items-center border-t border-gray-100 pt-3">
+      <div class="flex items-center space-x-3">
+        <!-- Input name set to 'media' with support for video and image extensions -->
+        <input type="file" name="media" accept="image/*,video/mp4,video/mov,video/avi,video/webm" class="text-xs text-gray-500">
+        <select name="visibility" class="bg-gray-100 border border-gray-200 text-gray-700 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brandPink">
+          <option value="public">Public</option>
+          <option value="friends">Friends Only</option>
+          <option value="private">Only Me</option>
+        </select>
+      </div>
+      <button type="submit" class="bg-brandPink hover:bg-opacity-90 text-white font-bold px-5 py-1.5 rounded-lg text-sm transition">Post</button>
+    </div>
+  </form>
+</div>
+
+<!-- Newsfeed Items -->
+<div class="space-y-4 mb-10">
+  {% for post in posts %}
+  <!-- Added id="post-{{ post.id }}" for scroll anchoring -->
+  <div id="post-{{ post.id }}" class="bg-white p-4 rounded-xl shadow border border-gray-200">
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-full bg-brandPink text-white font-bold flex items-center justify-center shrink-0">
+          {{ post.author.username|slice:":1"|upper }}
+        </div>
+        <div>
+          <a href="{% url 'profile' post.author.username %}" class="font-bold text-gray-800 hover:underline">{{ post.author.username }}</a>
+          <p class="text-xs text-gray-400">{{ post.created_at|timesince }} ago</p>
+        </div>
+      </div>
+      <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">{{ post.get_visibility_display }}</span>
+    </div>
+
+    <p class="text-gray-800 text-sm mb-3">{{ post.content }}</p>
+
+    <!-- Unified Media Renderer handling full display for both Images and Videos -->
+    {% if post.media %}
+      {% with url=post.media.url|lower %}
+        {% if ".mp4" in url or ".mov" in url or ".webm" in url or ".avi" in url %}
+          <video controls class="rounded-lg w-full mb-3 object-contain max-h-[600px] bg-black border">
+            <source src="{{ post.media.url }}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        {% else %}
+          <img src="{{ post.media.url }}" class="rounded-lg w-full mb-3 object-contain max-h-[600px] border" alt="Post media">
+        {% endif %}
+      {% endwith %}
+    {% elif post.image %}
+      <!-- Fallback support for legacy image fields if any exist -->
+      <img src="{{ post.image.url }}" class="rounded-lg w-full mb-3 object-contain max-h-[600px] border" alt="Post image">
+    {% endif %}
+
+    <div class="flex border-t border-gray-100 pt-2 text-center text-sm font-semibold text-gray-600">
+      <a href="{% url 'like_post' post.id %}" class="w-full py-1 hover:text-brandPink transition">
+        <i class="fa-regular fa-thumbs-up mr-1"></i> Like ({{ post.likes.count }})
+      </a>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="mt-3 pt-3 border-t border-gray-100 space-y-2">
+      {% for comment in post.comments.all %}
+        <div class="bg-gray-50 p-2 rounded-lg text-xs flex justify-between items-start">
+          <div>
+            <span class="font-bold text-gray-900">@{{ comment.author.username }}:</span>
+            <span class="text-gray-700">{{ comment.content }}</span>
+          </div>
+          <span class="text-[10px] text-gray-400">{{ comment.created_at|timesince }} ago</span>
+        </div>
+      {% endfor %}
+
+      <!-- Comment Submission Form -->
+      <form method="POST" class="flex gap-2 mt-2">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <input 
+          type="text" 
+          name="comment_content" 
+          placeholder="Write a comment..." 
+          class="w-full bg-gray-100 rounded-full px-4 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brandPink border border-gray-200"
+          required
+        >
+        <button type="submit" class="bg-brandPink text-white px-3 py-1.5 rounded-full text-xs font-bold shrink-0 hover:bg-opacity-90">Reply</button>
+      </form>
+    </div>
+  </div>
+  {% empty %}
+  <div class="bg-white p-6 rounded-xl shadow text-center text-gray-500">
+    No posts yet. Share something with your network!
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Scroll Preservation Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.location.hash) {
+      const targetElement = document.querySelector(window.location.hash);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'instant', block: 'center' });
+      }
+    }
+  });
+</script>
+{% endblock %}

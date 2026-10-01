@@ -1,0 +1,44 @@
+<!-- accounts/chat.html -->
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="bg-white rounded-xl shadow border max-w-lg mx-auto flex flex-col h-[75vh]">
+  <div class="p-4 border-b flex items-center space-x-3 bg-gray-50 rounded-t-xl">
+    <div class="w-10 h-10 rounded-full bg-brandPink text-white font-bold flex items-center justify-center">
+      {{ other_user.username|slice:":1"|upper }}
+    </div>
+    <div>
+      <h3 class="font-bold text-gray-900">@{{ other_user.username }}</h3>
+      {% if is_friend %}
+        <span class="text-[10px] text-green-600 font-semibold">Friends</span>
+      {% else %}
+        <span class="text-[10px] text-gray-400 font-semibold">Not Friends (1 message limit)</span>
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50/50">
+    {% for msg in chat_messages %}
+      <div class="flex {% if msg.sender == request.user %}justify-end{% else %}justify-start{% endif %}">
+        <div class="max-w-[75%] px-4 py-2 rounded-2xl text-sm shadow-sm {% if msg.sender == request.user %}bg-brandPink text-white rounded-br-none{% else %}bg-white text-gray-800 border rounded-bl-none{% endif %}">
+          <p>{{ msg.content }}</p>
+          <span class="block text-[10px] mt-1 text-right {% if msg.sender == request.user %}text-pink-100{% else %}text-gray-400{% endif %}">{{ msg.timestamp|time:"H:i" }}</span>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center text-gray-400 text-sm mt-10">Say hello to @{{ other_user.username }}! 👋</p>
+    {% endfor %}
+  </div>
+
+  {% if can_send %}
+    <form method="POST" class="p-3 border-t bg-white rounded-b-xl flex gap-2">
+      {% csrf_token %}
+      <input type="text" name="content" placeholder="Type a message..." class="w-full bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brandPink border" required>
+      <button type="submit" class="bg-brandPink text-white px-5 py-2 rounded-full font-bold text-sm hover:bg-opacity-90">Send</button>
+    </form>
+  {% else %}
+    <div class="p-4 border-t bg-gray-50 rounded-b-xl text-center">
+      <p class="text-xs text-gray-500">You can only send one message to users you aren't friends with until they reply or accept your friend request.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
