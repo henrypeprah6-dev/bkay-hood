@@ -89,10 +89,10 @@ class SignUpForm(UserCreationForm):
         user.email = self.cleaned_data['email']
         if commit:
             user.save()
-            # Automatically create the linked Profile and save the selected community
-            Profile.objects.create(
+            # Safely update or create the profile to prevent race conditions with signals.py
+            Profile.objects.update_or_create(
                 user=user,
-                community=self.cleaned_data.get('community')
+                defaults={'community': self.cleaned_data.get('community')}
             )
         return user
 
