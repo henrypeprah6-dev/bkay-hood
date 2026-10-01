@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-prototype-key-change-in-production'
-DEBUG = False  # Set to False for production deployment
+DEBUG = True  # Temporarily set to True for debugging the 500 error
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
