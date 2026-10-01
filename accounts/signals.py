@@ -6,16 +6,11 @@ from .models import Profile
 
 
 @receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    """Safely create or fetch a Profile instance whenever a new User is registered."""
+def create_or_save_user_profile(sender, instance, created, **kwargs):
+    """Safely create or save the Profile instance whenever a User is created or updated."""
     if created:
         Profile.objects.get_or_create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    """Safely save or generate the Profile instance whenever the User object is updated."""
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
     else:
+        # Ensures that if an existing user somehow lacks a profile, it gets created safely
         Profile.objects.get_or_create(user=instance)
+        instance.profile.save()
