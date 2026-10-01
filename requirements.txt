@@ -5,3 +5,4 @@ dj-database-url
 cloudinary
 django-cloudinary-storage
 whitenoise
+Pillow
