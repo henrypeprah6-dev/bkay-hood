@@ -1,6 +1,10 @@
 # bkay_hood/settings.py
 import os
 from pathlib import Path
+import dj_database_url
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,7 +18,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',  # Required for Cloudinary storage
     'django.contrib.staticfiles',
+    'cloudinary',          # Required for Cloudinary storage
     'accounts.apps.AccountsConfig',  # Connects app & loads signals.py automatically
 ]
 
@@ -55,11 +61,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bkay_hood.wsgi.application'
 
+# Database Configuration (Neon PostgreSQL via environment variable, falls back to SQLite locally if needed)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = []
@@ -74,7 +82,15 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files (User uploaded post photos, videos, and avatars)
+# Media files (Cloudinary permanent storage for production, local folder fallback for development)
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
