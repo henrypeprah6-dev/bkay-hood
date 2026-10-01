@@ -33,7 +33,7 @@
   <!-- Top Navigation Bar -->
   <nav class="bg-white border-b-2 border-brandPink sticky top-0 z-50 shadow-sm px-4 py-2 flex flex-col sm:flex-row justify-between items-center gap-2">
     <div class="flex items-center justify-between w-full sm:w-auto">
-      <a href="{% url 'feed' %}" class="text-2xl font-extrabold text-brandPink tracking-wide">Bkay Hood</a>
+      <a href="{% url 'home' %}" class="text-2xl font-extrabold text-brandPink tracking-wide">Bkay Hood</a>
     </div>
 
     <!-- Search Form (Visible on all screens, full width on mobile) -->
@@ -46,7 +46,7 @@
 
     {% if user.is_authenticated %}
     <div class="flex items-center justify-center space-x-4 sm:space-x-5 w-full sm:w-auto py-1 sm:py-0">
-      <a href="{% url 'feed' %}" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition" title="Home"><i class="fa-solid fa-house"></i></a>
+      <a href="{% url 'home' %}" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition" title="Home"><i class="fa-solid fa-house"></i></a>
       
       <!-- Messages Icon with Unread Badge -->
       <a href="{% url 'inbox' %}" class="relative w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition" title="Messages">
