@@ -5,6 +5,12 @@ from django.utils import timezone
 from django.core.validators import FileExtensionValidator
 import datetime
 
+# Optional: import cloudinary resource validator if you want explicit video handling
+try:
+    from cloudinary_storage.validators import FileTypeValidator
+except ImportError:
+    FileTypeValidator = None
+
 
 class UserProfile(models.Model):
     """Custom model for landing page registration data."""

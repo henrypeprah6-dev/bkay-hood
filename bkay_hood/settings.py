@@ -61,10 +61,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bkay_hood.wsgi.application'
 
-# Database Configuration (Neon PostgreSQL via environment variable, falls back to SQLite locally if needed)
+# Database Configuration (Directly targets Neon PostgreSQL with your direct connection string)
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        default='postgresql://neondb_owner:npg_WAl3eyctBUr5@ep-old-rain-b1p1pcmz-pooler.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require',
         conn_max_age=600,
         ssl_require=True
     )
@@ -83,11 +83,18 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files (Cloudinary permanent storage for production, local folder fallback for development)
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Modern Django Storage Configuration for Cloudinary (replaces legacy DEFAULT_FILE_STORAGE)
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'mtxsbwh3'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
