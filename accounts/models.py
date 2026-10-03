@@ -2,15 +2,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.core.validators import FileExtensionValidator
 import datetime
-
-# Optional: import cloudinary resource validator if you want explicit video handling
-try:
-    from cloudinary_storage.validators import FileTypeValidator
-except ImportError:
-    FileTypeValidator = None
-
+from cloudinary.models import CloudinaryField  # Import CloudinaryField for proper image/video handling
 
 class UserProfile(models.Model):
     """Custom model for landing page registration data."""
@@ -48,15 +41,11 @@ class Post(models.Model):
         ('private', 'Private'),
     ]
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
-    content = models.TextField()
+    content = models.TextField(blank=True, null=True) # Allowed blank in case of media-only posts
     
-    # Clean up duplicate image fields if you are using 'media' for both images and videos
-    media = models.FileField(
-        upload_to='post_media/', 
-        blank=True, 
-        null=True,
-        validators=[FileExtensionValidator(allowed_extensions=['mp4', 'mov', 'avi', 'webm', 'jpg', 'jpeg', 'png', 'gif'])]
-    )
+    # FIXED: Using CloudinaryField with resource_type='auto' so Cloudinary correctly accepts and processes both images and videos
+    media = CloudinaryField('media', resource_type='auto', blank=True, null=True)
+    
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES, default='public')
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
