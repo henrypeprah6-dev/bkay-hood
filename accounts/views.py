@@ -5,6 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
+import cloudinary.uploader
 from .forms import SignUpForm, UserProfileForm, LoginForm
 from .models import UserProfile, Profile, Post, Comment, Follow, FriendRequest, Notification, Message, Block
 
@@ -55,12 +56,11 @@ def signup_view(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Safely ensure or update profile data with the selected community without unique constraint crashes
             Profile.objects.update_or_create(
                 user=user,
                 defaults={'community': form.cleaned_data.get('community')}
             )
-            login(request, user)  # Auto-login after registration (Facebook style)
+            login(request, user)
             return redirect('home')
     else:
         form = SignUpForm()
@@ -105,6 +105,7 @@ def home(request):
             content = request.POST.get('content')
             media = request.FILES.get('media')
             visibility = request.POST.get('visibility', 'public')
+            
             if content or media:
                 Post.objects.create(author=request.user, content=content, media=media, visibility=visibility)
                 return redirect('home')
@@ -116,7 +117,6 @@ def home(request):
             post_obj = get_object_or_404(Post, id=post_id)
             if comment_text:
                 Comment.objects.create(post=post_obj, author=request.user, content=comment_text)
-                # Create a notification for post owner if someone else comments
                 if post_obj.author != request.user:
                     Notification.objects.create(
                         recipient=post_obj.author,
@@ -152,7 +152,6 @@ def profile_view(request, username):
     """View individual profile page with friend request, connection state, and block status checks."""
     profile_user = get_object_or_404(User, username=username)
     
-    # Check if blocked either way
     is_blocked = Block.objects.filter(blocker=request.user, blocked=profile_user).exists()
     is_blocked_by = Block.objects.filter(blocker=profile_user, blocked=request.user).exists()
 
@@ -166,7 +165,6 @@ def profile_view(request, username):
     if request.user != profile_user and not is_blocked and not is_blocked_by:
         is_following = Follow.objects.filter(follower=request.user, following=profile_user).exists()
         
-        # Check if they are mutual followers (friends)
         reverse_follow = Follow.objects.filter(follower=profile_user, following=request.user).exists()
         if is_following and reverse_follow:
             is_friend = True
@@ -422,17 +420,14 @@ def chat_view(request, username):
     """Messaging system chat view with restriction logic, block checks, and delete support."""
     other_user = get_object_or_404(User, username=username)
     
-    # Check if a block exists between users
     is_blocked = Block.objects.filter(
         Q(blocker=request.user, blocked=other_user) | Q(blocker=other_user, blocked=request.user)
     ).exists()
     if is_blocked:
         return redirect('inbox')
 
-    # Automatically mark incoming unread messages from this partner as read
     Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).update(is_read=True)
 
-    # Check if current user and other user are friends (mutual follow)
     user_follows = Follow.objects.filter(follower=request.user, following=other_user).exists()
     other_follows = Follow.objects.filter(follower=other_user, following=request.user).exists()
     is_friend = user_follows and other_follows
@@ -440,7 +435,6 @@ def chat_view(request, username):
     if request.method == 'POST':
         content = request.POST.get('content')
         if content:
-            # If they are not friends, check if the user has already sent a message
             if not is_friend:
                 sent_count = Message.objects.filter(sender=request.user, receiver=other_user).count()
                 if sent_count >= 1:
@@ -455,7 +449,6 @@ def chat_view(request, username):
             )
             return redirect('chat', username=username)
 
-    # Fetch messages visible to the current user (taking soft deletes into account)
     chat_messages = Message.objects.filter(
         (Q(sender=request.user) & Q(receiver=other_user) & Q(is_deleted_by_sender=False)) |
         (Q(sender=other_user) & Q(receiver=request.user) & Q(is_deleted_by_receiver=False))

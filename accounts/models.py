@@ -49,7 +49,8 @@ class Post(models.Model):
     ]
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     content = models.TextField()
-    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
+    
+    # Clean up duplicate image fields if you are using 'media' for both images and videos
     media = models.FileField(
         upload_to='post_media/', 
         blank=True, 

@@ -152,18 +152,21 @@ class UserProfileForm(forms.ModelForm):
 
 
 class PostForm(forms.ModelForm):
-    """Form for creating newsfeed posts with text content and optional image uploads."""
+    """Form for creating newsfeed posts with text content, optional media uploads, and visibility settings."""
     class Meta:
         model = Post
-        fields = ['content', 'image']
+        fields = ['content', 'media', 'visibility']
         widgets = {
             'content': forms.Textarea(attrs={
                 'placeholder': "What's on your mind?",
                 'rows': 2,
                 'class': 'w-full bg-gray-100 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brandPink resize-none'
             }),
-            'image': forms.FileInput(attrs={
+            'media': forms.FileInput(attrs={
                 'class': 'text-xs text-gray-500'
+            }),
+            'visibility': forms.Select(attrs={
+                'class': 'text-xs border rounded p-1'
             })
         }
 
