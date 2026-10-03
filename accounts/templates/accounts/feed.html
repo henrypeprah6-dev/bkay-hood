@@ -53,8 +53,8 @@
     {% if post.media %}
       {% with url=post.media.url|lower %}
         {% if ".mp4" in url or ".mov" in url or ".webm" in url or ".avi" in url %}
-          <!-- Added autoplay, muted, playsinline, and loop for auto-playing videos -->
-          <video autoplay muted playsinline loop controls class="rounded-lg w-full mb-3 object-contain max-h-[600px] bg-black border">
+          <!-- Added feed-video class, muted, playsinline, and loop -->
+          <video muted playsinline loop controls class="rounded-lg w-full mb-3 object-contain max-h-[600px] bg-black border feed-video">
             <source src="{{ post.media.url }}" type="video/mp4">
             Your browser does not support the video tag.
           </video>
@@ -107,15 +107,43 @@
   {% endfor %}
 </div>
 
-<!-- Scroll Preservation Script -->
+<!-- Scroll Preservation & Video Auto-Play/Pause Script -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    // 1. Scroll Position Restoration
     if (window.location.hash) {
       const targetElement = document.querySelector(window.location.hash);
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'instant', block: 'center' });
       }
     }
+
+    // 2. Intersection Observer to Play/Pause Feed Videos on Scroll
+    const videos = document.querySelectorAll(".feed-video");
+
+    const observerCallback = (entries) => {
+      entries.forEach(entry => {
+        const video = entry.target;
+        if (entry.isIntersecting) {
+          video.play().catch(error => {
+            console.log("Autoplay prevented:", error);
+          });
+        } else {
+          video.pause();
+        }
+      });
+    };
+
+    const observerOptions = {
+      root: null,
+      threshold: 0.5 // Triggers when at least 50% of the video is visible in the viewport
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    videos.forEach(video => {
+      observer.observe(video);
+    });
   });
 </script>
 {% endblock %}
