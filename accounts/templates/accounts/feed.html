@@ -9,7 +9,8 @@
       <div class="w-10 h-10 rounded-full bg-brandPink text-white font-bold flex items-center justify-center shrink-0">
         {{ user.username|slice:":1"|upper }}
       </div>
-      <textarea name="content" rows="2" placeholder="What's on your mind, {{ user.username }}?" class="w-full bg-gray-100 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brandPink resize-none" required></textarea>
+      <!-- Removed 'required' attribute to allow media-only posts -->
+      <textarea name="content" rows="2" placeholder="What's on your mind, {{ user.username }}?" class="w-full bg-gray-100 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brandPink resize-none"></textarea>
     </div>
     <div class="flex justify-between items-center border-t border-gray-100 pt-3">
       <div class="flex items-center space-x-3">
@@ -44,7 +45,9 @@
       <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">{{ post.get_visibility_display }}</span>
     </div>
 
-    <p class="text-gray-800 text-sm mb-3">{{ post.content }}</p>
+    {% if post.content %}
+      <p class="text-gray-800 text-sm mb-3">{{ post.content }}</p>
+    {% endif %}
 
     <!-- Unified Media Renderer handling full display for both Images and Videos -->
     {% if post.media %}

@@ -4,6 +4,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib import messages
 from django.db.models import Q
 import cloudinary.uploader
 from .forms import SignUpForm, UserProfileForm, LoginForm
@@ -106,8 +107,20 @@ def home(request):
             media = request.FILES.get('media')
             visibility = request.POST.get('visibility', 'public')
             
+            # Treat empty/zero-size files as None to prevent Cloudinary errors
+            if media and media.size == 0:
+                media = None
+            
             if content or media:
-                Post.objects.create(author=request.user, content=content, media=media, visibility=visibility)
+                try:
+                    Post.objects.create(
+                        author=request.user, 
+                        content=content, 
+                        media=media if media else None, 
+                        visibility=visibility
+                    )
+                except Exception as e:
+                    messages.error(request, f"Could not upload media. Please check the file format. ({e})")
                 return redirect('home')
                 
         # Handle comment submission from feed items
