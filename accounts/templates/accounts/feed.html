@@ -49,15 +49,20 @@
       <p class="text-gray-800 text-sm mb-3">{{ post.content }}</p>
     {% endif %}
 
-    <!-- Unified Media Renderer handling full display for both Images and Videos -->
+    <!-- Unified Media Renderer with Video Wrapper & Mute Button Overlay -->
     {% if post.media %}
       {% with url=post.media.url|lower %}
         {% if ".mp4" in url or ".mov" in url or ".webm" in url or ".avi" in url %}
-          <!-- Added feed-video class, muted, playsinline, and loop -->
-          <video muted playsinline loop controls class="rounded-lg w-full mb-3 object-contain max-h-[600px] bg-black border feed-video">
-            <source src="{{ post.media.url }}" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
+          <div class="relative rounded-lg w-full mb-3 bg-black overflow-hidden group video-container">
+            <video muted playsinline loop controls class="w-full object-contain max-h-[600px] feed-video">
+              <source src="{{ post.media.url }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <!-- Mute / Unmute Toggle Overlay Button -->
+            <button type="button" class="mute-toggle-btn absolute bottom-14 right-3 bg-black bg-opacity-60 text-white p-2.5 rounded-full hover:bg-opacity-80 transition flex items-center justify-center shadow-lg focus:outline-none z-10">
+              <i class="fa-solid fa-volume-xmark text-sm"></i>
+            </button>
+          </div>
         {% else %}
           <img src="{{ post.media.url }}" class="rounded-lg w-full mb-3 object-contain max-h-[600px] border" alt="Post media">
         {% endif %}
@@ -107,7 +112,7 @@
   {% endfor %}
 </div>
 
-<!-- Scroll Preservation & Video Auto-Play/Pause Script -->
+<!-- Scroll & Video Control Scripts -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     // 1. Scroll Position Restoration
@@ -118,31 +123,72 @@
       }
     }
 
-    // 2. Intersection Observer to Play/Pause Feed Videos on Scroll
-    const videos = document.querySelectorAll(".feed-video");
+    // 2. Intersection Observer to Auto-Unmute, Play, and Pause on Scroll
+    const videoContainers = document.querySelectorAll(".video-container");
 
     const observerCallback = (entries) => {
       entries.forEach(entry => {
-        const video = entry.target;
+        const video = entry.target.querySelector(".feed-video");
+        const muteBtn = entry.target.querySelector(".mute-toggle-btn");
+        const icon = muteBtn ? muteBtn.querySelector("i") : null;
+        if (!video) return;
+
         if (entry.isIntersecting) {
-          video.play().catch(error => {
-            console.log("Autoplay prevented:", error);
+          // Attempt to auto-unmute and play when visible
+          video.muted = false;
+          video.play().then(() => {
+            if (icon) {
+              icon.classList.remove("fa-volume-xmark");
+              icon.classList.add("fa-volume-high");
+            }
+          }).catch(error => {
+            // Fallback if browser blocks unmuted play
+            video.muted = true;
+            video.play();
+            if (icon) {
+              icon.classList.remove("fa-volume-high");
+              icon.classList.add("fa-volume-xmark");
+            }
           });
         } else {
+          // Pause and mute when out of view
           video.pause();
+          video.muted = true;
+          if (icon) {
+            icon.classList.remove("fa-volume-high");
+            icon.classList.add("fa-volume-xmark");
+          }
         }
       });
     };
 
     const observerOptions = {
       root: null,
-      threshold: 0.5 // Triggers when at least 50% of the video is visible in the viewport
+      threshold: 0.5 // Triggers when 50% visible
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    videos.forEach(video => {
-      observer.observe(video);
+    videoContainers.forEach(container => {
+      observer.observe(container);
+
+      // 3. Manual Mute/Unmute Toggle Button Handler
+      const video = container.querySelector(".feed-video");
+      const muteBtn = container.querySelector(".mute-toggle-btn");
+      const icon = muteBtn.querySelector("i");
+
+      muteBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        if (video.muted) {
+          video.muted = false;
+          icon.classList.remove("fa-volume-xmark");
+          icon.classList.add("fa-volume-high");
+        } else {
+          video.muted = true;
+          icon.classList.remove("fa-volume-high");
+          icon.classList.add("fa-volume-xmark");
+        }
+      });
     });
   });
 </script>
