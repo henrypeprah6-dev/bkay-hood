@@ -53,7 +53,8 @@
     {% if post.media %}
       {% with url=post.media.url|lower %}
         {% if ".mp4" in url or ".mov" in url or ".webm" in url or ".avi" in url %}
-          <video controls class="rounded-lg w-full mb-3 object-contain max-h-[600px] bg-black border">
+          <!-- Added autoplay, muted, playsinline, and loop for auto-playing videos -->
+          <video autoplay muted playsinline loop controls class="rounded-lg w-full mb-3 object-contain max-h-[600px] bg-black border">
             <source src="{{ post.media.url }}" type="video/mp4">
             Your browser does not support the video tag.
           </video>
